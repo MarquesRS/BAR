@@ -1,0 +1,140 @@
+create database bar_banco;
+use bar_banco;
+
+create table estado (
+    id integer primary key auto_increment,
+    nome varchar(60),
+    uf varchar(2)
+);
+
+create table pais (id integer primary key auto_increment,nome varchar(60),sigla varchar(2));
+
+create table endereco (
+    id integer primary key auto_increment,
+    id_estado integer,
+    id_pais integer,
+    ativo boolean,
+    numero integer,
+    rua varchar(100),
+    bairro varchar(100),
+    cidade varchar(100),
+    cep varchar(10),
+    complemento varchar(100),
+    constraint fk_endereco_estado foreign key (id_estado) references estado(id),
+	constraint fk_endereco_pais foreign key (id_pais) references pais(id)
+);
+
+create table pessoa (
+    id integer primary key auto_increment,
+    nome varchar(100),
+    cpf varchar(15),
+    rg varchar(15),
+    email varchar(100),
+    telefone varchar(25),
+    data_nascimento varchar(10), 
+    data_cadastro varchar(10)
+);
+
+create table pessoa_endereco (
+    id integer primary key auto_increment,
+    id_pessoa integer,
+    id_endereco integer,
+    constraint fk_pessoa_endereco_pessoa foreign key (id_pessoa) references pessoa(id),
+    constraint fk_pessoa_endereco_endereco foreign key (id_endereco) references endereco(id)
+);
+
+create table funcionario (
+    id integer primary key auto_increment,
+    id_pessoa integer,
+    ativo boolean,
+    conta_corrente varchar(20),
+    permissoes varchar(5),
+    usuario varchar(100),
+    senha varchar(100),
+    data_admissao varchar(10),
+    data_recisao varchar(10),
+    constraint fk_funcionario_pessoa foreign key (id_pessoa) references pessoa(id)
+);
+
+create table fornecedor (
+    id integer primary key auto_increment,
+    id_pessoa integer,
+    codigo_interno integer,
+    inscricao_estadual integer,
+    nome_fantasia varchar(100),
+    razao_social varchar(100),
+    cnpj varchar(20),
+    constraint fk_fornecedor_pessoa foreign key (id_pessoa) references pessoa(id)
+);
+
+create table produto (
+    id integer primary key auto_increment,
+    id_fornecedor integer,
+    ativo boolean,
+    preco_custo decimal(5,2),
+    preco_venda decimal(5,2),
+    marca varchar(50),
+    modelo varchar(50),
+    data_fabricacao varchar(10),
+    data_vencimento varchar(10),
+    data_cadastro varchar(10),
+    descricao varchar(255), 
+    quantidade integer(11),	
+    total_custo decimal(7,2),	
+    total_venda decimal(7,2),		
+    constraint fk_produto_fornecedor foreign key (id_fornecedor) references fornecedor(id)
+);
+
+create table pagamento (
+    id integer primary key auto_increment,
+    id_pedido integer,
+    nome varchar(50),
+    descricao varchar(100),
+    constraint fk_pagamento_pedido foreign key (id_pedido) references pedido(id)
+);
+
+create table bebida (
+    id integer primary key auto_increment,
+    id_produto integer,
+    menores boolean,
+    volume decimal (5,2),
+    teor_alcolico decimal(5,2),
+    ingredientes Text,
+    constraint fk_bebida_produto foreign key (id_produto) references produto(id)
+);
+
+create table pedido (
+    id integer primary key auto_increment,
+	id_cliente integer,
+	id_fornecedor integer,
+	id_funcionario integer,
+	descricao text,
+	tipo boolean,
+	valor decimal(7,2),
+	data varchar(10)
+);
+
+create table pedido_produto (
+    id integer primary key auto_increment,
+    id_pedido integer,
+    id_produto integer,
+    constraint fk_pedido_produto_pedido foreign key (id_pedido) references pedido(id),
+    constraint fk_pedido_produto_produto foreign key (id_produto) references produto(id)
+);
+
+create table estoque (
+	id integer primary key auto_increment,
+	ativo boolean,
+	nome varchar(100),
+	quantidade integer(11),
+	total_custo decimal(7,2),
+	total_venda decimal(7,2),
+	finalidade varchar(255)
+);
+
+create table estoque_produto (
+	id_estoque integer,
+	id_produto integer,
+	constraint fk_estoque_produto__estoque foreign key (id_estoque) references estoque(id),
+	constraint fk_estoque_produto__produto foreign key (id_produto) references produto(id)
+);
